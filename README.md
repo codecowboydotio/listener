@@ -5,4 +5,5 @@ I wrote this in response to working on firewalls and needing to know the externa
 
 TODO:
 1) Change the logfile name to be a command line argument (i.e. configurable).
+
 2) Add option for proper syslog logging.
