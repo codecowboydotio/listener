@@ -9,6 +9,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <time.h>
+#include "version.h"
 
 int main(int argc, char *argv[])
 {
@@ -23,7 +24,8 @@ int main(int argc, char *argv[])
 
     FILE *file;
     struct stat st;
-
+    
+    const char * version = "1.2";
 
         if(argc != 2) {
         fprintf(stderr,"Usage: %s <Port Number>\n", argv[0]);
@@ -44,6 +46,7 @@ int main(int argc, char *argv[])
 
     listen(listenfd, 10);
 
+    fprintf(stderr, "Current Version: %s\n", version);
 
 
     while(1)
