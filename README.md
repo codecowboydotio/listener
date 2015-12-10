@@ -1,5 +1,5 @@
 # listener
-This is a simple listener that will print the IP address of the remote computer an the time.
+This is a simple listener that will print the IP address of the remote computer and the time.
 You run this externally on a server, and connect to it from your inside network.
 While services like "what's your IP" are good - not all traffic is HTTP based.
 
