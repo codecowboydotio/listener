@@ -30,7 +30,6 @@ int main(int argc, char *argv[])
 
 /* Set up syslog mask */
     setlogmask (LOG_UPTO (LOG_NOTICE));
-    openlog ("exampleprog", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL1);
 
         if(argc != 2) {
         fprintf(stderr,"Usage: %s <Port Number>\n", argv[0]);
