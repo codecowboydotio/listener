@@ -9,6 +9,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <time.h>
+#include <syslog.h>
 #include "version.h"
 
 int main(int argc, char *argv[])
@@ -26,6 +27,10 @@ int main(int argc, char *argv[])
     struct stat st;
     
     const char * version = "1.2";
+
+/* Set up syslog mask */
+    setlogmask (LOG_UPTO (LOG_NOTICE));
+    openlog ("exampleprog", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL1);
 
         if(argc != 2) {
         fprintf(stderr,"Usage: %s <Port Number>\n", argv[0]);
@@ -57,6 +62,8 @@ int main(int argc, char *argv[])
         printf("File size:   %lld bytes\n", (long long) st.st_size);
         file = fopen("logfile.log", "a+");
 
+
+
         addr_size = sizeof their_addr;
         connfd = accept(listenfd, (struct sockaddr *)&their_addr, &addr_size);
 
@@ -74,6 +81,9 @@ int main(int argc, char *argv[])
 /* Write connection attempts to log file*/
         fprintf(file, "%.24s\t", ctime(&ticks));
         fprintf(file,"%s\n",inet_ntoa(their_addr.sin_addr));
+/* Write connection attempts to syslog*/
+	syslog (LOG_NOTICE, "Connection from %s\n",inet_ntoa(their_addr.sin_addr));
+	closelog ();
 
         close(connfd);
         fclose(file);
