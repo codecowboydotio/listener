@@ -25,9 +25,6 @@ int main(int argc, char *argv[]) {
     char sendBuff[1025];
     time_t ticks;
 
-    FILE *file;
-    struct stat st;
-    
     const char * version = "1.2";
 
         if(argc != 2) {
@@ -90,14 +87,6 @@ int main(int argc, char *argv[]) {
     //Main Process
     //----------------
     while(1){
-        stat("logfile.log", &st);
-        size = st.st_size;
-
-        printf("File size:   %lld bytes\n", (long long) st.st_size);
-        file = fopen("logfile.log", "a+");
-
-
-
         addr_size = sizeof their_addr;
         connfd = accept(listenfd, (struct sockaddr *)&their_addr, &addr_size);
 
@@ -112,15 +101,9 @@ int main(int argc, char *argv[]) {
         snprintf(sendBuff, sizeof(sendBuff), "%s\n", inet_ntoa(their_addr.sin_addr));
         write(connfd, sendBuff, strlen(sendBuff));
 
-		/* Write connection attempts to log file*/
-        fprintf(file, "%.24s\t", ctime(&ticks));
-        fprintf(file,"%s\n",inet_ntoa(their_addr.sin_addr));
-		/* Write connection attempts to syslog*/
-		syslog (LOG_NOTICE, "Connection from %s\n",inet_ntoa(their_addr.sin_addr));
-		closelog ();
-
+        /* Write connection attempts to syslog*/
+        syslog (LOG_NOTICE, "Connection from %s\n",inet_ntoa(their_addr.sin_addr));
         close(connfd);
-        fclose(file);
         sleep(1);
     }
 
