@@ -1,3 +1,4 @@
+#include <fcntl.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
 #include <netinet/in.h>
@@ -10,10 +11,11 @@
 #include <sys/types.h>
 #include <time.h>
 #include <syslog.h>
-#include "version.h"
 
-int main(int argc, char *argv[])
-{
+#define DAEMON_NAME "listener_daemon"
+
+int main(int argc, char *argv[]) {
+
     int listenfd = 0, connfd = 0, size=0;
     struct sockaddr_in serv_addr;
     struct sockaddr_in their_addr;
@@ -27,9 +29,6 @@ int main(int argc, char *argv[])
     struct stat st;
     
     const char * version = "1.2";
-
-/* Set up syslog mask */
-    setlogmask (LOG_UPTO (LOG_NOTICE));
 
         if(argc != 2) {
         fprintf(stderr,"Usage: %s <Port Number>\n", argv[0]);
@@ -53,8 +52,44 @@ int main(int argc, char *argv[])
     fprintf(stderr, "Current Version: %s\n", version);
 
 
-    while(1)
-    {
+
+
+    //Set our Logging Mask and open the Log
+    setlogmask(LOG_UPTO(LOG_NOTICE));
+    openlog(DAEMON_NAME, LOG_CONS | LOG_NDELAY | LOG_PERROR | LOG_PID, LOG_USER);
+
+    syslog(LOG_INFO, "Entering Daemon");
+
+    pid_t pid, sid;
+
+   //Fork the Parent Process
+    pid = fork();
+
+    if (pid < 0) { exit(EXIT_FAILURE); }
+
+    //We got a good pid, Close the Parent Process
+    if (pid > 0) { exit(EXIT_SUCCESS); }
+
+    //Change File Mask
+    umask(0);
+
+    //Create a new Signature Id for our child
+    sid = setsid();
+    if (sid < 0) { exit(EXIT_FAILURE); }
+
+    //Change Directory
+    //If we cant find the directory we exit with failure.
+    if ((chdir("/")) < 0) { exit(EXIT_FAILURE); }
+
+    //Close Standard File Descriptors
+    close(STDIN_FILENO);
+    close(STDOUT_FILENO);
+    close(STDERR_FILENO);
+
+    //----------------
+    //Main Process
+    //----------------
+    while(1){
         stat("logfile.log", &st);
         size = st.st_size;
 
@@ -77,15 +112,18 @@ int main(int argc, char *argv[])
         snprintf(sendBuff, sizeof(sendBuff), "%s\n", inet_ntoa(their_addr.sin_addr));
         write(connfd, sendBuff, strlen(sendBuff));
 
-/* Write connection attempts to log file*/
+		/* Write connection attempts to log file*/
         fprintf(file, "%.24s\t", ctime(&ticks));
         fprintf(file,"%s\n",inet_ntoa(their_addr.sin_addr));
-/* Write connection attempts to syslog*/
-	syslog (LOG_NOTICE, "Connection from %s\n",inet_ntoa(their_addr.sin_addr));
-	closelog ();
+		/* Write connection attempts to syslog*/
+		syslog (LOG_NOTICE, "Connection from %s\n",inet_ntoa(their_addr.sin_addr));
+		closelog ();
 
         close(connfd);
         fclose(file);
         sleep(1);
-     }
+    }
+
+    //Close the log
+    closelog ();
 }
