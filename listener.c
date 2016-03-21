@@ -102,7 +102,6 @@ int main(int argc, char *argv[]) {
         /* Write connection attempts to syslog*/
         syslog (LOG_NOTICE, "Connection from %s\n",inet_ntoa(their_addr.sin_addr));
         close(connfd);
-        sleep(1);
     }
 
     //Close the log
