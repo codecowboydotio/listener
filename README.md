@@ -8,8 +8,23 @@ Simply run the listener, and telnet to the port that it's running on.
 
 I wrote this in response to working on firewalls and needing to know the external address of a server before and after NAT changes.
 
-TODO:
+The typical use case for this is to run on an external host on the internet, for NAT and firewall testing.
 
-1) Change the logfile name to be a command line argument (i.e. configurable).
+This version is a daemon version of the code.
+This is so that the code can run as a daemon. 
+The other branch is no a deamon.
 
-2) Add option for proper syslog logging.
+ - Major changes so far are removal of log file.
+ - Syslog capability.
+
+TO DO: 
+------------
+1) Signal handling.
+
+2) OS Fingerprinting (may be a while off).
+
+3) More verbose logging.
+
+4) General code cleanup.
+
+5) Makefile
