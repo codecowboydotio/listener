@@ -48,14 +48,9 @@ int main(int argc, char *argv[]) {
 
     fprintf(stderr, "Current Version: %s\n", version);
 
-
-
-
     //Set our Logging Mask and open the Log
     setlogmask(LOG_UPTO(LOG_NOTICE));
     openlog(DAEMON_NAME, LOG_CONS | LOG_NDELAY | LOG_PERROR | LOG_PID, LOG_USER);
-
-    syslog(LOG_INFO, "Entering Daemon");
 
     pid_t pid, sid;
 
@@ -87,7 +82,7 @@ int main(int argc, char *argv[]) {
     //Main Process
     //----------------
 
-    syslog (LOG_NOTICE, "Starting");
+    syslog (LOG_NOTICE, "Starting up.");
 
     while(1){
         addr_size = sizeof their_addr;
