@@ -27,16 +27,16 @@ int main(int argc, char *argv[]) {
 
     const char * version = "1.2";
 
-        if(argc != 2) {
-        fprintf(stderr,"Usage: %s <Port Number>\n", argv[0]);
-        exit(1);
+    if(argc != 2) {
+	fprintf(stderr,"Usage: %s <Port Number>\n", argv[0]);
+	exit(1);
     }
 
     listenfd = socket(AF_INET, SOCK_STREAM, 0);
     memset(&serv_addr, '0', sizeof(serv_addr));
     memset(sendBuff, '0', sizeof(sendBuff));
 
-        portNumber = atoi(argv[1]);
+    portNumber = atoi(argv[1]);
 
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -86,6 +86,9 @@ int main(int argc, char *argv[]) {
     //----------------
     //Main Process
     //----------------
+
+    syslog (LOG_NOTICE, "Starting");
+
     while(1){
         addr_size = sizeof their_addr;
         connfd = accept(listenfd, (struct sockaddr *)&their_addr, &addr_size);
