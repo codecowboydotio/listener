@@ -16,7 +16,7 @@
 
 int main(int argc, char *argv[]) {
 
-    int listenfd = 0, connfd = 0, size=0;
+    int listenfd = 0, connfd = 0;
     struct sockaddr_in serv_addr;
     struct sockaddr_in their_addr;
     socklen_t addr_size;
@@ -82,7 +82,8 @@ int main(int argc, char *argv[]) {
     //Main Process
     //----------------
 
-    syslog (LOG_NOTICE, "Starting up.");
+    syslog (LOG_NOTICE, "Starting up...");
+    syslog (LOG_NOTICE, "Listening on port %i\n",portNumber);
 
     while(1){
         addr_size = sizeof their_addr;
