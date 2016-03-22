@@ -27,4 +27,4 @@ TO DO:
 
 4) General code cleanup.
 
-5) Makefile
+5) Configure script
