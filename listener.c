@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
 
     listen(listenfd, 10);
 
-    fprintf(stderr, "Current Version: %s\n", version);
+//    fprintf(stderr, "Current Version: %s\n", version);
 
     //Set our Logging Mask and open the Log
     setlogmask(LOG_UPTO(LOG_NOTICE));
@@ -82,6 +82,7 @@ int main(int argc, char *argv[]) {
     //Main Process
     //----------------
 
+    syslog (LOG_NOTICE, "Current Version: %s\n", version);
     syslog (LOG_NOTICE, "Starting up...");
     syslog (LOG_NOTICE, "Listening on port %i\n",portNumber);
 
