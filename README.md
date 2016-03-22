@@ -11,8 +11,8 @@ I wrote this in response to working on firewalls and needing to know the externa
 The typical use case for this is to run on an external host on the internet, for NAT and firewall testing.
 
 This version is a daemon version of the code.
-This is so that the code can run as a daemon. 
-The other branch is no a deamon.
+
+I've pushed the daemon branch back to main and will be working off main for a while.
 
  - Major changes so far are removal of log file.
  - Syslog capability.
