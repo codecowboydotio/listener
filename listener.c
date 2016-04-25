@@ -32,6 +32,7 @@ int main(int argc, char *argv[]) {
     const char * version = "1.2";
 
     signal(SIGINT, INThandler);
+    signal(SIGHUP, INThandler);
     signal(SIGUSR2, INThandler);
 
 
@@ -118,10 +119,27 @@ int main(int argc, char *argv[]) {
 
 void  INThandler(int sig)
 {
+	/* example code - we don't want to ignore ALL signals only certain ones */
+	/*signal(sig, SIG_IGN);*/
 
-     syslog (LOG_NOTICE, "Process is still alive");
+	signal(2, SIG_IGN);
+	signal(1, SIG_IGN);
+	signal(12, SIG_IGN);
+	if (sig == 2)
+	{
+		syslog (LOG_NOTICE, "Process is still alive");
+	}
+	if (sig == 1)
+	{
+		syslog (LOG_NOTICE, "Signal 1");
+	}
+	if (sig == 12)
+	{
+		syslog (LOG_NOTICE, "Signal 12");
+	}
 
-     signal(sig, SIG_IGN);
+	/* Reinstall the handler before exiting */
+	signal(SIGINT, INThandler); 
+	signal(SIGHUP, INThandler); 
+	signal(SIGUSR2, INThandler); 
 }
-
-
