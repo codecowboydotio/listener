@@ -11,8 +11,12 @@
 #include <sys/types.h>
 #include <time.h>
 #include <syslog.h>
+#include <signal.h>
 
 #define DAEMON_NAME "listener_daemon"
+
+void     INThandler(int);
+
 
 int main(int argc, char *argv[]) {
 
@@ -26,6 +30,10 @@ int main(int argc, char *argv[]) {
     time_t ticks;
 
     const char * version = "1.2";
+
+    signal(SIGINT, INThandler);
+    signal(SIGUSR2, INThandler);
+
 
     if(argc != 2) {
 	fprintf(stderr,"Usage: %s <Port Number>\n", argv[0]);
@@ -45,8 +53,6 @@ int main(int argc, char *argv[]) {
     bind(listenfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
 
     listen(listenfd, 10);
-
-//    fprintf(stderr, "Current Version: %s\n", version);
 
     //Set our Logging Mask and open the Log
     setlogmask(LOG_UPTO(LOG_NOTICE));
@@ -109,3 +115,13 @@ int main(int argc, char *argv[]) {
     //Close the log
     closelog ();
 }
+
+void  INThandler(int sig)
+{
+
+     syslog (LOG_NOTICE, "Process is still alive");
+
+     signal(sig, SIG_IGN);
+}
+
+
