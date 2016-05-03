@@ -15,7 +15,11 @@
 
 #define DAEMON_NAME "listener_daemon"
 
+/* declare interrupt handler */
 void     INThandler(int);
+
+/* declare global variable - bad practice but easier than struct passing */
+int counter;
 
 
 int main(int argc, char *argv[]) {
@@ -25,11 +29,12 @@ int main(int argc, char *argv[]) {
     struct sockaddr_in their_addr;
     socklen_t addr_size;
     unsigned short portNumber;
-
     char sendBuff[1025];
     time_t ticks;
 
     const char * version = "1.2";
+
+    counter = 0;
 
     signal(SIGINT, INThandler);
     signal(SIGHUP, INThandler);
@@ -119,6 +124,8 @@ int main(int argc, char *argv[]) {
 
 void  INThandler(int sig)
 {
+
+
 	/* example code - we don't want to ignore ALL signals only certain ones */
 	/*signal(sig, SIG_IGN);*/
 
@@ -132,6 +139,8 @@ void  INThandler(int sig)
 	if (sig == 1)
 	{
 		syslog (LOG_NOTICE, "Signal 1");
+		counter++;
+		syslog (LOG_NOTICE, "Counter is set to %i", counter);
 	}
 	if (sig == 12)
 	{
