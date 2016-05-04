@@ -21,10 +21,12 @@ TO DO:
 ------------
 1) Signal handling.
 
-2) OS Fingerprinting (may be a while off).
+2) Logging levels via signals.
 
-3) More verbose logging.
+3) OS Fingerprinting (may be a while off).
 
-4) General code cleanup.
+4) More verbose logging.
 
-5) Configure script
+5) General code cleanup.
+
+6) Configure script
