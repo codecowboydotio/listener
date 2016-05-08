@@ -12,6 +12,7 @@
 #include <time.h>
 #include <syslog.h>
 #include <signal.h>
+#include <stdbool.h>
 
 #define DAEMON_NAME "listener_daemon"
 
@@ -19,8 +20,7 @@
 void     INThandler(int);
 
 /* declare global variable - bad practice but easier than struct passing */
-int counter;
-
+bool logswitch=true;
 
 int main(int argc, char *argv[]) {
 
@@ -33,8 +33,6 @@ int main(int argc, char *argv[]) {
     time_t ticks;
 
     const char * version = "1.2";
-
-    counter = 0;
 
     signal(SIGINT, INThandler);
     signal(SIGHUP, INThandler);
@@ -114,8 +112,11 @@ int main(int argc, char *argv[]) {
         write(connfd, sendBuff, strlen(sendBuff));
 
         /* Write connection attempts to syslog*/
-        syslog (LOG_NOTICE, "Connection from %s\n",inet_ntoa(their_addr.sin_addr));
-        close(connfd);
+	if ( logswitch == 1)
+	{
+        	syslog (LOG_NOTICE, "Connection from %s\n",inet_ntoa(their_addr.sin_addr));
+        }
+	close(connfd);
     }
 
     //Close the log
@@ -135,12 +136,18 @@ void  INThandler(int sig)
 	if (sig == 2)
 	{
 		syslog (LOG_NOTICE, "Process is still alive");
+		syslog (LOG_NOTICE, "logswitch setting is currently set to %d", logswitch);
 	}
 	if (sig == 1)
 	{
-		syslog (LOG_NOTICE, "Signal 1");
-		counter++;
-		syslog (LOG_NOTICE, "Counter is set to %i", counter);
+		if (logswitch == 1 )
+		{
+			logswitch = 0;
+		}
+		else
+		{
+			logswitch = 1;
+		}
 	}
 	if (sig == 12)
 	{
