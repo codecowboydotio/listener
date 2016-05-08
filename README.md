@@ -19,14 +19,10 @@ I've pushed the daemon branch back to main and will be working off main for a wh
 
 TO DO: 
 ------------
-1) Signal handling.
+1) OS Fingerprinting (may be a while off).
 
-2) Logging levels via signals.
+2) More verbose logging.
 
-3) OS Fingerprinting (may be a while off).
+3) General code cleanup.
 
-4) More verbose logging.
-
-5) General code cleanup.
-
-6) Configure script
+4) Configure script
