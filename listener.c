@@ -112,7 +112,8 @@ int main(int argc, char *argv[]) {
         write(connfd, sendBuff, strlen(sendBuff));
 
         /* Write connection attempts to syslog*/
-	if ( logswitch == 1)
+	
+	if ( logswitch == true)
 	{
         	syslog (LOG_NOTICE, "Connection from %s\n",inet_ntoa(their_addr.sin_addr));
         }
@@ -135,11 +136,14 @@ void  INThandler(int sig)
 	signal(12, SIG_IGN);
 	if (sig == 2)
 	{
-		syslog (LOG_NOTICE, "Process is still alive");
-		syslog (LOG_NOTICE, "logswitch setting is currently set to %d", logswitch);
+		syslog (LOG_NOTICE, "Settings Dump");
+		syslog (LOG_NOTICE, "logswitch: setting is currently set to %d", logswitch);
 	}
 	if (sig == 1)
 	{
+	/* If we receive a HUP we want to make sure that we just toggle the value of logswitch variable.
+	   This will mean that we either turn off logging to syslog if it's on, or if it's not we turn it on */
+
 		if (logswitch == 1 )
 		{
 			logswitch = 0;
@@ -151,7 +155,7 @@ void  INThandler(int sig)
 	}
 	if (sig == 12)
 	{
-		syslog (LOG_NOTICE, "Signal 12");
+		syslog (LOG_NOTICE, "Process is still alive");
 	}
 
 	/* Reinstall the handler before exiting */
