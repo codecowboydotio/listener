@@ -24,6 +24,7 @@ void     INThandler(int);
 
 /* declare global variable - bad practice but easier than struct passing */
 bool logswitch=true;
+const char * version = "1.2";
 
 int main(int argc, char *argv[]) {
 
@@ -35,7 +36,6 @@ int main(int argc, char *argv[]) {
     char sendBuff[1025];
     time_t ticks;
 
-    const char * version = "1.2";
 
     signal(SIGINT, INThandler);
     signal(SIGHUP, INThandler);
@@ -129,10 +129,12 @@ int main(int argc, char *argv[]) {
 
 void  INThandler(int sig)
 {
-
-
-	/* example code - we don't want to ignore ALL signals only certain ones */
-	/*signal(sig, SIG_IGN);*/
+	
+	/* Signals to control behaviour.
+	   SIGINT 1 = Toggle logging of client information to syslog.
+	   SIGHUP 2 = Print out current settings of all variables. This includes versions.
+	   SIGUSR2 12 = I'm alive. Signal to be used by monitoring system to generate syslog event.
+	*/
 
 	signal(2, SIG_IGN);
 	signal(1, SIG_IGN);
@@ -140,6 +142,7 @@ void  INThandler(int sig)
 	if (sig == 2)
 	{
 		syslog (LOG_NOTICE, "Settings Dump");
+		syslog (LOG_NOTICE, "Version: %s", version);
 		syslog (LOG_NOTICE, "logswitch: setting is currently set to %d", logswitch);
 	}
 	if (sig == 1)
@@ -156,6 +159,8 @@ void  INThandler(int sig)
 			logswitch = 1;
 		}
 	}
+	/* If SIGUSR2 then just print message to syslog. Primarily used for monitoring applications so we have a way of
+	   determining that we are still running */
 	if (sig == 12)
 	{
 		syslog (LOG_NOTICE, "Process is still alive");
