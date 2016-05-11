@@ -12,10 +12,15 @@ The typical use case for this is to run on an external host on the internet, for
 
 This version is a daemon version of the code.
 
-I've pushed the daemon branch back to main and will be working off main for a while.
 
- - Major changes so far are removal of log file.
- - Syslog capability.
+SIGNAL HANDLING:
+-----------------
+If you send the code the following signals you will get the behaviour described below.
+
+SIGINT 1 = Toggle logging of client information to syslog.
+SIGHUP 2 = Print out current settings of all variables. This includes versions.
+SIGUSR2 12 = I'm alive. Signal to be used by monitoring system to generate syslog event.
+
 
 TO DO: 
 ------------
