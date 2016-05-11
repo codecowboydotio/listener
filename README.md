@@ -33,6 +33,9 @@ May 11 19:38:15 host listener_daemon[6564]: Version: 1.2
 May 11 19:38:15 host listener_daemon[6564]: logswitch: setting is currently set to 0
 
 
+
+
+
 [root@host listener]# kill -12 6564
 
 [root@host listener]# tail /var/log/messages
