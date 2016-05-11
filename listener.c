@@ -29,7 +29,7 @@ unsigned short portNumber;
 
 int main(int argc, char *argv[]) {
 
-    int listenfd = 0, connfd = 0;
+    int listenfd = 0, connfd = 0, rc;
     struct sockaddr_in serv_addr;
     struct sockaddr_in their_addr;
     socklen_t addr_size;
@@ -40,6 +40,10 @@ int main(int argc, char *argv[]) {
     signal(SIGINT, INThandler);
     signal(SIGHUP, INThandler);
     signal(SIGUSR2, INThandler);
+
+    //Set our Logging Mask and open the Log
+    setlogmask(LOG_UPTO(LOG_NOTICE));
+    openlog(DAEMON_NAME, LOG_CONS | LOG_NDELAY | LOG_PERROR | LOG_PID, LOG_USER);
 
 
     if(argc != 2) {
@@ -57,13 +61,14 @@ int main(int argc, char *argv[]) {
     serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     serv_addr.sin_port = htons(portNumber);
 
-    bind(listenfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
+    rc = bind(listenfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
+    if (rc < 0 )
+    {
+	syslog (LOG_NOTICE, "Cannot bind to port %d ", portNumber);
+        exit(-1);
+    }
 
     listen(listenfd, 10);
-
-    //Set our Logging Mask and open the Log
-    setlogmask(LOG_UPTO(LOG_NOTICE));
-    openlog(DAEMON_NAME, LOG_CONS | LOG_NDELAY | LOG_PERROR | LOG_PID, LOG_USER);
 
     pid_t pid, sid;
 
