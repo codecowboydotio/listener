@@ -18,8 +18,28 @@ SIGNAL HANDLING:
 If you send the code the following signals you will get the behaviour described below.
 
 SIGINT 1 = Toggle logging of client information to syslog.
+
 SIGHUP 2 = Print out current settings of all variables. This includes versions.
+
 SIGUSR2 12 = I'm alive. Signal to be used by monitoring system to generate syslog event.
+
+```
+[root@host listener]# kill -2 6564
+
+[root@host listener]# tail /var/log/messages
+
+May 11 19:38:15 host listener_daemon[6564]: Settings Dump
+May 11 19:38:15 host listener_daemon[6564]: Version: 1.2
+May 11 19:38:15 host listener_daemon[6564]: logswitch: setting is currently set to 0
+
+[root@host listener]# kill -12 6564
+
+
+[root@host listener]# tail /var/log/messages
+
+May 11 19:38:26 host listener_daemon[6564]: Process is still alive
+
+```
 
 
 TO DO: 
