@@ -25,6 +25,7 @@ void     INThandler(int);
 /* declare global variable - bad practice but easier than struct passing */
 bool logswitch=true;
 const char * version = "1.2";
+unsigned short portNumber;
 
 int main(int argc, char *argv[]) {
 
@@ -32,7 +33,6 @@ int main(int argc, char *argv[]) {
     struct sockaddr_in serv_addr;
     struct sockaddr_in their_addr;
     socklen_t addr_size;
-    unsigned short portNumber;
     char sendBuff[1025];
     time_t ticks;
 
@@ -143,6 +143,7 @@ void  INThandler(int sig)
 	{
 		syslog (LOG_NOTICE, "Settings Dump");
 		syslog (LOG_NOTICE, "Version: %s", version);
+		syslog (LOG_NOTICE, "Listening on port: %i", portNumber);
 		syslog (LOG_NOTICE, "logswitch: setting is currently set to %d", logswitch);
 	}
 	if (sig == 1)

@@ -30,6 +30,7 @@ SIGUSR2 12 = I'm alive. Signal to be used by monitoring system to generate syslo
 
 May 11 19:38:15 host listener_daemon[6564]: Settings Dump
 May 11 19:38:15 host listener_daemon[6564]: Version: 1.2
+May 11 19:38:15 host listener_daemon[6491]: Listening on port 4444
 May 11 19:38:15 host listener_daemon[6564]: logswitch: setting is currently set to 0
 
 
@@ -54,3 +55,6 @@ TO DO:
 3) General code cleanup.
 
 4) Configure script
+
+5) Error handling and checking around socket initialization
+
