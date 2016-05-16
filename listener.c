@@ -1,6 +1,5 @@
 /* https://github.com/scottorama1/listener */
 
-
 #include <fcntl.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
@@ -89,6 +88,7 @@ int main(int argc, char *argv[]) {
 
     //Change Directory
     //If we cant find the directory we exit with failure.
+    //Should probably not run in / as this is somewhat unsafe.
     if ((chdir("/")) < 0) { exit(EXIT_FAILURE); }
 
     //Close Standard File Descriptors
@@ -149,6 +149,7 @@ void  INThandler(int sig)
 		syslog (LOG_NOTICE, "Settings Dump");
 		syslog (LOG_NOTICE, "Version: %s", version);
 		syslog (LOG_NOTICE, "Listening on port: %i", portNumber);
+		syslog (LOG_NOTICE, "Current PID is: %d", getpid());
 		syslog (LOG_NOTICE, "logswitch: setting is currently set to %d", logswitch);
 	}
 	if (sig == 1)
