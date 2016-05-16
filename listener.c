@@ -39,6 +39,7 @@ int main(int argc, char *argv[]) {
     signal(SIGINT, INThandler);
     signal(SIGHUP, INThandler);
     signal(SIGUSR2, INThandler);
+    signal(SIGQUIT, INThandler);
 
     //Set our Logging Mask and open the Log
     setlogmask(LOG_UPTO(LOG_NOTICE));
@@ -138,11 +139,13 @@ void  INThandler(int sig)
 	/* Signals to control behaviour.
 	   SIGINT 1 = Toggle logging of client information to syslog.
 	   SIGHUP 2 = Print out current settings of all variables. This includes versions.
+	   SIGQUIT 3 = quit the process.
 	   SIGUSR2 12 = I'm alive. Signal to be used by monitoring system to generate syslog event.
 	*/
 
-	signal(2, SIG_IGN);
 	signal(1, SIG_IGN);
+	signal(2, SIG_IGN);
+	signal(3, SIG_IGN);
 	signal(12, SIG_IGN);
 	if (sig == 2)
 	{
@@ -165,6 +168,11 @@ void  INThandler(int sig)
 		{
 			logswitch = 1;
 		}
+	}
+	if (sig == 3)
+	{
+		syslog (LOG_NOTICE, "Exiting.....");
+		kill (getpid (), SIGKILL);
 	}
 	/* If SIGUSR2 then just print message to syslog. Primarily used for monitoring applications so we have a way of
 	   determining that we are still running */
