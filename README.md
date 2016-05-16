@@ -21,6 +21,8 @@ SIGINT 1 = Toggle logging of client information to syslog.
 
 SIGHUP 2 = Print out current settings of all variables. This includes versions.
 
+SIGQUIT 3 = Write a final entry to syslog and shut down.
+
 SIGUSR2 12 = I'm alive. Signal to be used by monitoring system to generate syslog event.
 
 ```
