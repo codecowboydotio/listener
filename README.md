@@ -48,6 +48,20 @@ May 11 19:38:26 host listener_daemon[6564]: Process is still alive
 ```
 
 
+BUILD:
+-----------
+To build the executable, you just do a make.
+
+There is a makefile, but no configure script.
+
+A configure script seemed a little heavy handed for such a small implementation.
+
+By default, will install in /usr/local/listener/bin/
+
+...perhaps a configure script with PREFIX would be helpful after all? :)
+
+
+
 TO DO: 
 ------------
 1) OS Fingerprinting (may be a while off).
