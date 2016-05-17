@@ -169,6 +169,9 @@ void  INThandler(int sig)
 			logswitch = 1;
 		}
 	}
+	/* This may seem a little pointless here because I'm just doing a KILL anyway.
+	   The point here is that in the future I may be actively writing to log files or databases
+	   and may need a way to gracefully shut down. For now a SIGKILL will do */
 	if (sig == 3)
 	{
 		syslog (LOG_NOTICE, "Exiting.....");
