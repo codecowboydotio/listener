@@ -15,6 +15,7 @@
 #include <syslog.h>
 #include <signal.h>
 #include <stdbool.h>
+#include <getopt.h>
 
 #define DAEMON_NAME "listener_daemon"
 
@@ -23,12 +24,24 @@ void     INThandler(int);
 
 /* declare global variable - bad practice but easier than struct passing */
 bool logswitch=true;
-const char * version = "1.2";
+const char * version = "1.3";
 unsigned short portNumber;
+int console = 0;
 
-int main(int argc, char *argv[]) {
+void print_usage() {
+	fprintf(stderr,"Usage: -p <Port Number>\n" );
+	fprintf(stderr,"Usage: -c Console mode. Will run process in the foreground"); 
+	fprintf(stderr,"\n");
+}
 
-    int listenfd = 0, connfd = 0, rc;
+struct option longopts[] = {
+	{"port",	required_argument, 0, 'p'},
+	{"console",	no_argument, 0, 'c'}
+};
+
+int main(int argc, char **argv[]) {
+
+    int listenfd = 0, connfd = 0, rc, opt=0, opterr=0, indexptr=0;
     struct sockaddr_in serv_addr;
     struct sockaddr_in their_addr;
     socklen_t addr_size;
@@ -45,17 +58,46 @@ int main(int argc, char *argv[]) {
     setlogmask(LOG_UPTO(LOG_NOTICE));
     openlog(DAEMON_NAME, LOG_CONS | LOG_NDELAY | LOG_PERROR | LOG_PID, LOG_USER);
 
-
-    if(argc != 2) {
-	fprintf(stderr,"Usage: %s <Port Number>\n", argv[0]);
+    if(argc == 1) {
+	print_usage();
 	exit(1);
     }
+
+    while ((opt = getopt_long(argc, argv, "p:c", longopts, &indexptr)) != -1)
+    {
+	switch(opt)
+	{
+		case 'p':
+		portNumber = atoi(optarg);
+		break;
+		case 'c':
+		printf("short option - %c  long option - %s\n",
+                                        opt, longopts[indexptr].name);
+		console = 1;
+		break;
+		case '?':
+		if ( optopt == 'p')
+		{
+			printf("\n%s Missing port number\n",longopts[indexptr].name);
+		}
+		else if (isprint (optopt))
+		{
+			printf("\nUnknown option - %c\n", optopt);
+		}
+		exit(2);
+		break;
+		default: print_usage();
+		exit(EXIT_FAILURE);
+	}
+    }
+
+
 
     listenfd = socket(AF_INET, SOCK_STREAM, 0);
     memset(&serv_addr, '0', sizeof(serv_addr));
     memset(sendBuff, '0', sizeof(sendBuff));
 
-    portNumber = atoi(argv[1]);
+    //portNumber = atoi(argv[1]);
 
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -70,6 +112,8 @@ int main(int argc, char *argv[]) {
 
     listen(listenfd, 10);
 
+if ( console == 0 )
+{
     pid_t pid, sid;
 
    //Fork the Parent Process
@@ -96,7 +140,7 @@ int main(int argc, char *argv[]) {
     close(STDIN_FILENO);
     close(STDOUT_FILENO);
     close(STDERR_FILENO);
-
+}
     //----------------
     //Main Process
     //----------------
@@ -154,6 +198,7 @@ void  INThandler(int sig)
 		syslog (LOG_NOTICE, "Listening on port: %i", portNumber);
 		syslog (LOG_NOTICE, "Current PID is: %d", getpid());
 		syslog (LOG_NOTICE, "logswitch: setting is currently set to %d", logswitch);
+		syslog (LOG_NOTICE, "console: setting is currently set to %d", console);
 	}
 	if (sig == 1)
 	{
@@ -189,3 +234,5 @@ void  INThandler(int sig)
 	signal(SIGHUP, INThandler); 
 	signal(SIGUSR2, INThandler); 
 }
+
+	
