@@ -39,9 +39,9 @@ struct option longopts[] = {
 	{"console",	no_argument, 0, 'c'}
 };
 
-int main(int argc, char **argv[]) {
+int main(int argc, char *argv[]) {
 
-    int listenfd = 0, connfd = 0, rc, opt=0, opterr=0, indexptr=0;
+    int listenfd = 0, connfd = 0, rc, opt=0, indexptr=0;
     struct sockaddr_in serv_addr;
     struct sockaddr_in their_addr;
     socklen_t addr_size;
