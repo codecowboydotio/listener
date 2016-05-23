@@ -13,6 +13,24 @@ The typical use case for this is to run on an external host on the internet, for
 This version is a daemon version of the code.
 
 
+RUN TIME:
+----------------
+The program takes two arguments
+
+```
+./listener -p <port>
+
+./listener -c
+
+```
+-p <port> = The port number to run the listener on.
+
+-c = run in console mode. 
+
+By default the program will run as a daemon, if you would like the program to run in the foreground - for example, in a docker container - then the -c argument can be used.
+It should be noted that when in console mode, a <ctrl>-<c> key combination will send a SIGHUP which will not quit the program. See signal section below.
+
+
 SIGNAL HANDLING:
 -----------------
 If you send the code the following signals you will get the behaviour described below.
