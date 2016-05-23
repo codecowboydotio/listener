@@ -233,6 +233,7 @@ void  INThandler(int sig)
 	signal(SIGINT, INThandler); 
 	signal(SIGHUP, INThandler); 
 	signal(SIGUSR2, INThandler); 
+	signal(SIGQUIT, INThandler); 
 }
 
 	
