@@ -1,6 +1,7 @@
 /* https://github.com/scottorama1/listener */
 
 #include <fcntl.h>
+#include <getopt.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
 #include <netinet/in.h>
@@ -15,7 +16,6 @@
 #include <syslog.h>
 #include <signal.h>
 #include <stdbool.h>
-#include <getopt.h>
 
 #define DAEMON_NAME "listener_daemon"
 
@@ -38,6 +38,66 @@ struct option longopts[] = {
 	{"port",	required_argument, 0, 'p'},
 	{"console",	no_argument, 0, 'c'}
 };
+
+void  INThandler(int sig)
+{
+	
+	/* Signals to control behaviour.
+	   SIGINT 1 = Toggle logging of client information to syslog.
+	   SIGHUP 2 = Print out current settings of all variables. This includes versions.
+	   SIGQUIT 3 = quit the process.
+	   SIGUSR2 12 = I'm alive. Signal to be used by monitoring system to generate syslog event.
+	*/
+
+	signal(1, SIG_IGN);
+	signal(2, SIG_IGN);
+	signal(3, SIG_IGN);
+	signal(12, SIG_IGN);
+	if (sig == 1)
+	{
+	/* If we receive a HUP we want to make sure that we just toggle the value of logswitch variable.
+	   This will mean that we either turn off logging to syslog if it's on, or if it's not we turn it on */
+
+		if (logswitch == 1 )
+		{
+			logswitch = 0;
+		}
+		else
+		{
+			logswitch = 1;
+		}
+	}
+	if (sig == 2)
+	{
+		syslog (LOG_NOTICE, "Settings Dump");
+		syslog (LOG_NOTICE, "Version: %s", version);
+		syslog (LOG_NOTICE, "Listening on port: %i", portNumber);
+		syslog (LOG_NOTICE, "Current PID is: %d", getpid());
+		syslog (LOG_NOTICE, "logswitch: setting is currently set to %d", logswitch);
+		syslog (LOG_NOTICE, "console: setting is currently set to %d", console);
+	}
+	/* This may seem a little pointless here because I'm just doing a KILL anyway.
+	   The point here is that in the future I may be actively writing to log files or databases
+	   and may need a way to gracefully shut down. For now a SIGKILL will do */
+	if (sig == 3)
+	{
+		syslog (LOG_NOTICE, "Exiting.....");
+		kill (getpid (), SIGKILL);
+	}
+	/* If SIGUSR2 then just print message to syslog. Primarily used for monitoring applications so we have a way of
+	   determining that we are still running */
+	if (sig == 12)
+	{
+		syslog (LOG_NOTICE, "Process is still alive");
+	}
+
+	/* Reinstall the handler before exiting */
+	signal(SIGINT, INThandler); 
+	signal(SIGHUP, INThandler); 
+	signal(SIGUSR2, INThandler); 
+	signal(SIGQUIT, INThandler); 
+}
+
 
 int main(int argc, char *argv[]) {
 
@@ -91,8 +151,6 @@ int main(int argc, char *argv[]) {
 	}
     }
 
-
-
     listenfd = socket(AF_INET, SOCK_STREAM, 0);
     memset(&serv_addr, '0', sizeof(serv_addr));
     memset(sendBuff, '0', sizeof(sendBuff));
@@ -141,9 +199,11 @@ if ( console == 0 )
     close(STDOUT_FILENO);
     close(STDERR_FILENO);
 }
-    //----------------
-    //Main Process
-    //----------------
+
+
+//----------------
+//Main Process
+//----------------
 
     syslog (LOG_NOTICE, "Current Version: %s\n", version);
     syslog (LOG_NOTICE, "Starting up...");
@@ -176,64 +236,3 @@ if ( console == 0 )
     //Close the log
     closelog ();
 }
-
-void  INThandler(int sig)
-{
-	
-	/* Signals to control behaviour.
-	   SIGINT 1 = Toggle logging of client information to syslog.
-	   SIGHUP 2 = Print out current settings of all variables. This includes versions.
-	   SIGQUIT 3 = quit the process.
-	   SIGUSR2 12 = I'm alive. Signal to be used by monitoring system to generate syslog event.
-	*/
-
-	signal(1, SIG_IGN);
-	signal(2, SIG_IGN);
-	signal(3, SIG_IGN);
-	signal(12, SIG_IGN);
-	if (sig == 2)
-	{
-		syslog (LOG_NOTICE, "Settings Dump");
-		syslog (LOG_NOTICE, "Version: %s", version);
-		syslog (LOG_NOTICE, "Listening on port: %i", portNumber);
-		syslog (LOG_NOTICE, "Current PID is: %d", getpid());
-		syslog (LOG_NOTICE, "logswitch: setting is currently set to %d", logswitch);
-		syslog (LOG_NOTICE, "console: setting is currently set to %d", console);
-	}
-	if (sig == 1)
-	{
-	/* If we receive a HUP we want to make sure that we just toggle the value of logswitch variable.
-	   This will mean that we either turn off logging to syslog if it's on, or if it's not we turn it on */
-
-		if (logswitch == 1 )
-		{
-			logswitch = 0;
-		}
-		else
-		{
-			logswitch = 1;
-		}
-	}
-	/* This may seem a little pointless here because I'm just doing a KILL anyway.
-	   The point here is that in the future I may be actively writing to log files or databases
-	   and may need a way to gracefully shut down. For now a SIGKILL will do */
-	if (sig == 3)
-	{
-		syslog (LOG_NOTICE, "Exiting.....");
-		kill (getpid (), SIGKILL);
-	}
-	/* If SIGUSR2 then just print message to syslog. Primarily used for monitoring applications so we have a way of
-	   determining that we are still running */
-	if (sig == 12)
-	{
-		syslog (LOG_NOTICE, "Process is still alive");
-	}
-
-	/* Reinstall the handler before exiting */
-	signal(SIGINT, INThandler); 
-	signal(SIGHUP, INThandler); 
-	signal(SIGUSR2, INThandler); 
-	signal(SIGQUIT, INThandler); 
-}
-
-	
