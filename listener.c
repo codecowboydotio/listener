@@ -1,4 +1,4 @@
-/* https://github.com/scottorama1/listener */
+/* https://github.com/svkdotcloud/listener */
 
 #include <fcntl.h>
 #include <getopt.h>
