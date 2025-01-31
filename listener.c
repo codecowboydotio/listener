@@ -16,6 +16,7 @@
 #include <syslog.h>
 #include <signal.h>
 #include <stdbool.h>
+#include <ctype.h>
 
 #define DAEMON_NAME "listener_daemon"
 
